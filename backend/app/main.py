@@ -4,6 +4,10 @@ PhoneMarket — FastAPI Application Entry Point.
 Lifecycle:
   • startup  – verifies DB connectivity
   • shutdown – disposes engine pool
+
+Mounts:
+  • REST API under /api/v1 (via api_router)
+  • WebSocket chat at /ws/chat/{order_id} (direct on app)
 """
 
 from contextlib import asynccontextmanager
@@ -14,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import router as api_router
 from app.core.config import get_settings
 from app.core.database import engine
+from app.routers.chat import websocket_chat
 
 settings = get_settings()
 
@@ -49,8 +54,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Routers ─────────────────────────────────
+# ─── REST Routers ────────────────────────────
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+# ─── WebSocket Routes ────────────────────────
+app.websocket("/ws/chat/{order_id}")(websocket_chat)
 
 
 @app.get("/", tags=["Root"])

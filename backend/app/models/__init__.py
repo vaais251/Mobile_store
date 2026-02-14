@@ -7,7 +7,7 @@ Import all models here so that:
 """
 
 from app.models.base import Base  # noqa: F401
-from app.models.message import Message, MessageType  # noqa: F401
+from app.models.message import Message, MessageType, RecipientType  # noqa: F401
 from app.models.order import Order, OrderStatus  # noqa: F401
 from app.models.phone_listing import (  # noqa: F401
     ListingStatus,
@@ -27,4 +27,5 @@ __all__ = [
     "OrderStatus",
     "Message",
     "MessageType",
+    "RecipientType",
 ]
