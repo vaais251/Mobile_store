@@ -98,3 +98,21 @@ class UserOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ─── Profile Update ─────────────────────────
+class UserUpdate(BaseModel):
+    """Schema for updating user profile. All fields optional."""
+
+    name: str | None = Field(None, min_length=2, max_length=120)
+    email: EmailStr | None = None
+    address_street: str | None = Field(None, min_length=2, max_length=500)
+    address_city: str | None = Field(None, min_length=2, max_length=100)
+    shop_name: str | None = Field(None, max_length=200)
+    is_individual: bool | None = None
+    location_lat: float | None = Field(None, ge=-90, le=90)
+    location_long: float | None = Field(None, ge=-180, le=180)
+
+    # Password change (optional — only set if user wants to change password)
+    current_password: str | None = Field(None, min_length=1)
+    new_password: str | None = Field(None, min_length=8, max_length=128)

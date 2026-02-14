@@ -16,8 +16,8 @@ import {
     Shield,
     Store,
     MapPin,
-    Building2,
 } from "lucide-react";
+import { CitySelector } from "@/components/CitySelector";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -371,20 +371,11 @@ export default function LoginPage() {
                                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-secondary-500">
                                     City
                                 </label>
-                                <div className="relative">
-                                    <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary-400" />
-                                    <input
-                                        type="text"
-                                        value={regCity}
-                                        onChange={(e) =>
-                                            setRegCity(e.target.value)
-                                        }
-                                        placeholder="e.g. Lahore, Karachi"
-                                        required
-                                        minLength={2}
-                                        className="h-11 w-full rounded-xl border border-secondary-200 bg-secondary-50 pl-10 pr-4 text-sm text-secondary-900 placeholder:text-secondary-400 transition-all focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-100"
-                                    />
-                                </div>
+                                <CitySelector
+                                    value={regCity}
+                                    onChange={setRegCity}
+                                    required
+                                />
                             </div>
 
                             {/* Role Picker */}

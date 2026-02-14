@@ -2,38 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal, MapPin } from "lucide-react";
+import { Search, MapPin, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const quickFilters = [
-    "All",
-    "iPhone",
-    "Samsung",
-    "Google Pixel",
-    "Xiaomi",
-    "OnePlus",
-    "Oppo",
-];
 
 export function HeroSection() {
     const router = useRouter();
     const [query, setQuery] = useState("");
-    const [activeFilter, setActiveFilter] = useState("All");
+    const [activeType, setActiveType] = useState<"used" | "new" | null>(null);
 
     const handleSearch = () => {
-        const q = query.trim();
-        if (q) {
-            router.push(`/search?q=${encodeURIComponent(q)}`);
-        } else {
-            router.push("/search");
-        }
+        const params = new URLSearchParams();
+        if (query.trim()) params.set("q", query.trim());
+        if (activeType) params.set("type", activeType);
+        router.push(`/search?${params.toString()}`);
     };
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-white via-secondary-50 to-secondary-200 px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:px-8">
-            {/* Background decoration */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-white via-secondary-50/50 to-secondary-100 px-4 pb-6 pt-10 sm:px-6 sm:pb-10 sm:pt-14 lg:px-8">
+            {/* Background blurs */}
             <div className="absolute -right-40 top-0 h-80 w-80 rounded-full bg-primary-100/40 blur-3xl" />
             <div className="absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-primary-50/50 blur-3xl" />
 
@@ -46,78 +35,74 @@ export function HeroSection() {
                 >
                     <h1 className="text-3xl font-bold tracking-tight text-secondary-900 sm:text-4xl lg:text-5xl">
                         Find your next phone,{" "}
-                        <span className="bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">
                             locally.
                         </span>
                     </h1>
-                    <p className="mx-auto mt-4 max-w-xl text-base text-secondary-600 sm:text-lg">
-                        Safe, admin-moderated peer-to-peer marketplace.
-                        <br className="hidden sm:block" />
-                        PTA verified phones. Transparent deals.
+                    <p className="mx-auto mt-3 max-w-xl text-sm text-secondary-500 sm:text-base">
+                        Safe, admin-moderated peer-to-peer marketplace for
+                        mobile devices in your neighborhood.
                     </p>
                 </motion.div>
 
-                {/* ─── Search Bar ─────────────────── */}
+                {/* Type pills + Location */}
                 <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 0.5 }}
-                    className="mx-auto mt-8 max-w-2xl"
+                    transition={{ delay: 0.12, duration: 0.4 }}
+                    className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-2"
                 >
-                    <div className="flex items-center gap-2 rounded-2xl bg-white p-2 shadow-premium-lg ring-1 ring-secondary-200/60">
-                        <div className="flex flex-1 items-center gap-2 rounded-xl px-3">
-                            <Search className="h-5 w-5 shrink-0 text-secondary-400" />
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Search by brand, model, or keyword..."
-                                className="w-full bg-transparent py-2.5 text-sm text-secondary-900 placeholder:text-secondary-400 focus:outline-none sm:text-base"
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleSearch();
-                                }}
-                            />
-                        </div>
-
-                        {/* Location chip */}
-                        <button className="hidden items-center gap-1 rounded-xl border border-secondary-200 px-3 py-2 text-xs font-medium text-secondary-600 transition-colors hover:bg-secondary-100 sm:flex">
-                            <MapPin className="h-3.5 w-3.5" />
-                            Nearby
-                        </button>
-
-                        {/* Filters button */}
-                        <button className="hidden rounded-xl border border-secondary-200 p-2.5 text-secondary-500 transition-colors hover:bg-secondary-100 sm:block">
-                            <SlidersHorizontal className="h-4 w-4" />
-                        </button>
-
-                        {/* Search button */}
-                        <Button size="md" className="shrink-0 rounded-xl px-6" onClick={handleSearch}>
-                            Search
-                        </Button>
-                    </div>
+                    <button
+                        onClick={() =>
+                            setActiveType(
+                                activeType === "used" ? null : "used"
+                            )
+                        }
+                        className={cn(
+                            "rounded-full px-5 py-2 text-sm font-semibold transition-all",
+                            activeType === "used"
+                                ? "bg-primary-500 text-white shadow-sm"
+                                : "bg-primary-50 text-primary-600 hover:bg-primary-100"
+                        )}
+                    >
+                        Used
+                    </button>
+                    <button
+                        onClick={() =>
+                            setActiveType(activeType === "new" ? null : "new")
+                        }
+                        className={cn(
+                            "rounded-full px-5 py-2 text-sm font-semibold transition-all",
+                            activeType === "new"
+                                ? "bg-primary-500 text-white shadow-sm"
+                                : "bg-primary-50 text-primary-600 hover:bg-primary-100"
+                        )}
+                    >
+                        New
+                    </button>
+                    <button className="flex items-center gap-1.5 rounded-full border border-secondary-300 bg-white px-4 py-2 text-sm font-medium text-secondary-600 transition-colors hover:bg-secondary-50">
+                        <MapPin className="h-3.5 w-3.5 text-primary-500" />
+                        All Pakistan
+                    </button>
                 </motion.div>
 
-                {/* ─── Quick Filters ──────────────── */}
+                {/* Moderated Transactions Banner */}
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-2"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.4 }}
+                    className="mx-auto mt-6 max-w-2xl"
                 >
-                    {quickFilters.map((f) => (
-                        <button
-                            key={f}
-                            onClick={() => setActiveFilter(f)}
-                            className={cn(
-                                "rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
-                                activeFilter === f
-                                    ? "bg-primary-500 text-white shadow-sm"
-                                    : "bg-white text-secondary-600 hover:bg-secondary-100 ring-1 ring-secondary-200/80"
-                            )}
-                        >
-                            {f}
-                        </button>
-                    ))}
+                    <div className="flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-white">
+                        <ShieldCheck className="h-4 w-4 shrink-0" />
+                        <span className="text-sm font-semibold">
+                            Moderated Transactions
+                        </span>
+                        <span className="hidden text-xs text-white/70 sm:block">
+                            — Every chat is admin-monitored to ensure safety and
+                            prevent fraud in local pickups.
+                        </span>
+                    </div>
                 </motion.div>
             </div>
         </section>

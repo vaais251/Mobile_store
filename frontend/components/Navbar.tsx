@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,10 @@ import {
     LogIn,
     Shield,
     Home,
+    LogOut,
+    Settings,
+    ChevronDown,
+    UserCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -59,9 +63,33 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [searchFocused, setSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [profileOpen, setProfileOpen] = useState(false);
+    const profileRef = useRef<HTMLDivElement>(null);
 
     const isAdmin = user?.role === "admin";
     const isLoggedIn = !!user;
+
+    // Close profile dropdown on outside click
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(e.target as Node)
+            ) {
+                setProfileOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("access_token");
+        setProfileOpen(false);
+        window.location.href = "/";
+    };
+
+    const userInitial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
     return (
         <header className="sticky top-0 z-50 border-b border-secondary-300/60 bg-white/80 backdrop-blur-xl">
@@ -153,6 +181,135 @@ export function Navbar() {
                                     Sell
                                 </Button>
                             </Link>
+
+                            {/* ─── Profile Dropdown ─── */}
+                            <div ref={profileRef} className="relative ml-1">
+                                <button
+                                    onClick={() =>
+                                        setProfileOpen(!profileOpen)
+                                    }
+                                    className={cn(
+                                        "flex items-center gap-2 rounded-xl px-2 py-1.5 transition-all",
+                                        profileOpen
+                                            ? "bg-secondary-100"
+                                            : "hover:bg-secondary-100"
+                                    )}
+                                >
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500 text-white">
+                                        <span className="text-xs font-bold">
+                                            {userInitial}
+                                        </span>
+                                    </div>
+                                    <div className="hidden lg:block text-left">
+                                        <p className="text-xs font-semibold text-secondary-900 leading-tight">
+                                            {user?.name || "User"}
+                                        </p>
+                                        <p className="text-[10px] text-secondary-500 capitalize leading-tight">
+                                            {user?.role}
+                                        </p>
+                                    </div>
+                                    <ChevronDown
+                                        className={cn(
+                                            "h-3.5 w-3.5 text-secondary-400 transition-transform",
+                                            profileOpen && "rotate-180"
+                                        )}
+                                    />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                <AnimatePresence>
+                                    {profileOpen && (
+                                        <motion.div
+                                            initial={{
+                                                opacity: 0,
+                                                y: 8,
+                                                scale: 0.95,
+                                            }}
+                                            animate={{
+                                                opacity: 1,
+                                                y: 0,
+                                                scale: 1,
+                                            }}
+                                            exit={{
+                                                opacity: 0,
+                                                y: 8,
+                                                scale: 0.95,
+                                            }}
+                                            transition={{ duration: 0.15 }}
+                                            className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-secondary-200 bg-white shadow-lg"
+                                        >
+                                            {/* User info header */}
+                                            <div className="border-b border-secondary-100 px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100">
+                                                        <span className="text-sm font-bold text-primary-600">
+                                                            {userInitial}
+                                                        </span>
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-semibold text-secondary-900 truncate">
+                                                            {user?.name ||
+                                                                "User"}
+                                                        </p>
+                                                        <p className="text-[11px] text-secondary-500 capitalize">
+                                                            {user?.role} Account
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Menu items */}
+                                            <div className="py-1">
+                                                <Link
+                                                    href="/profile"
+                                                    onClick={() =>
+                                                        setProfileOpen(false)
+                                                    }
+                                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary-700 transition-colors hover:bg-secondary-50"
+                                                >
+                                                    <UserCircle className="h-4 w-4 text-secondary-400" />
+                                                    My Profile
+                                                </Link>
+                                                <Link
+                                                    href="/profile?tab=settings"
+                                                    onClick={() =>
+                                                        setProfileOpen(false)
+                                                    }
+                                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary-700 transition-colors hover:bg-secondary-50"
+                                                >
+                                                    <Settings className="h-4 w-4 text-secondary-400" />
+                                                    Settings
+                                                </Link>
+                                                {isAdmin && (
+                                                    <Link
+                                                        href="/admin/dashboard"
+                                                        onClick={() =>
+                                                            setProfileOpen(
+                                                                false
+                                                            )
+                                                        }
+                                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary-700 transition-colors hover:bg-secondary-50"
+                                                    >
+                                                        <Shield className="h-4 w-4 text-secondary-400" />
+                                                        Admin Panel
+                                                    </Link>
+                                                )}
+                                            </div>
+
+                                            {/* Logout */}
+                                            <div className="border-t border-secondary-100 py-1">
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                                >
+                                                    <LogOut className="h-4 w-4" />
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </>
                     ) : (
                         /* Login button — shown when not logged in */
@@ -237,6 +394,32 @@ export function Navbar() {
                                 <>
                                     <div className="my-2 h-px bg-secondary-200" />
 
+                                    {/* Profile card */}
+                                    <div className="flex items-center gap-3 rounded-xl bg-secondary-50 px-3 py-3 mb-2">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white">
+                                            <span className="text-sm font-bold">
+                                                {userInitial}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-secondary-900">
+                                                {user?.name || "User"}
+                                            </p>
+                                            <p className="text-xs text-secondary-500 capitalize">
+                                                {user?.role} Account
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-secondary-700 hover:bg-secondary-100"
+                                        onClick={() => setMobileOpen(false)}
+                                    >
+                                        <UserCircle className="h-4 w-4" />
+                                        My Profile
+                                    </Link>
+
                                     <Link
                                         href="/chat/test-order"
                                         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-secondary-700 hover:bg-secondary-100"
@@ -274,6 +457,17 @@ export function Navbar() {
                                             Sell
                                         </Button>
                                     </Link>
+
+                                    <button
+                                        onClick={() => {
+                                            setMobileOpen(false);
+                                            handleLogout();
+                                        }}
+                                        className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        Logout
+                                    </button>
                                 </>
                             ) : (
                                 <>
