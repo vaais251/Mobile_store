@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "CHANGE-ME"
     API_V1_PREFIX: str = "/api/v1"
 
+    # ─── JWT / Auth ───────────────────────────
+    JWT_SECRET_KEY: str = "CHANGE-ME-JWT-SECRET"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+
     # ─── Database ─────────────────────────────
     DATABASE_URL: str = (
         "postgresql+asyncpg://phonemarket_user:phonemarket_dev_pass_2026"

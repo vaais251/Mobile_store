@@ -36,6 +36,7 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         default=UserRole.BUYER,
     )
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
 
     # ─── Seller-Specific ─────────────────────
     shop_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
