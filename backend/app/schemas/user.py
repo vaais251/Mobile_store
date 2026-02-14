@@ -35,9 +35,9 @@ class UserCreate(BaseModel):
     shop_name: str | None = Field(None, max_length=200)
     is_individual: bool = True
 
-    # Address
-    address_street: str | None = None
-    address_city: str | None = Field(None, max_length=100)
+    # Address (required)
+    address_street: str = Field(..., min_length=2, max_length=500)
+    address_city: str = Field(..., min_length=2, max_length=100)
 
     # Location (captured from device GPS on registration)
     location_lat: float | None = Field(None, ge=-90, le=90)
@@ -91,7 +91,8 @@ class UserOut(BaseModel):
     role: UserRole
     shop_name: str | None = None
     is_individual: bool
-    address_city: str | None = None
+    address_street: str = ""
+    address_city: str = ""
     location_lat: float | None = None
     location_long: float | None = None
     created_at: datetime

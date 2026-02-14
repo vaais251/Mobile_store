@@ -40,7 +40,7 @@ interface UseChatWebSocketReturn {
 const WS_BASE =
     (typeof window !== "undefined"
         ? process.env.NEXT_PUBLIC_WS_URL
-        : undefined) || "ws://localhost:8000";
+        : undefined) || "ws://localhost:8001";
 
 const INITIAL_RETRY_MS = 5_000;
 const MAX_RETRY_MS = 30_000;

@@ -10,31 +10,32 @@ interface StatCardProps {
     icon: React.ReactNode;
     label: string;
     value: number | string;
-    trend?: number; // percentage change, e.g. +12.5 or -3.2
+    trend?: number;
+    subtitle?: string;
     color?: "primary" | "success" | "warning" | "accent";
-    index?: number; // for staggered animation
+    index?: number;
 }
 
 const COLOR_MAP = {
     primary: {
-        bg: "bg-primary-50",
-        icon: "bg-primary-100 text-primary-500",
-        trend: "text-primary-600",
+        bg: "bg-white",
+        icon: "bg-blue-50 text-blue-500",
+        border: "border-blue-100",
     },
     success: {
-        bg: "bg-success-50",
-        icon: "bg-success-100 text-success-500",
-        trend: "text-success-600",
+        bg: "bg-white",
+        icon: "bg-emerald-50 text-emerald-500",
+        border: "border-emerald-100",
     },
     warning: {
-        bg: "bg-warning-50",
-        icon: "bg-warning-100 text-warning-500",
-        trend: "text-warning-600",
+        bg: "bg-white",
+        icon: "bg-amber-50 text-amber-500",
+        border: "border-amber-100",
     },
     accent: {
-        bg: "bg-accent-50",
-        icon: "bg-accent-100 text-accent-500",
-        trend: "text-accent-600",
+        bg: "bg-white",
+        icon: "bg-blue-50 text-blue-500",
+        border: "border-blue-100",
     },
 };
 
@@ -43,6 +44,7 @@ export function StatCard({
     label,
     value,
     trend,
+    subtitle,
     color = "primary",
     index = 0,
 }: StatCardProps) {
@@ -56,6 +58,14 @@ export function StatCard({
             className="rounded-2xl bg-white p-5 premium-shadow"
         >
             <div className="flex items-start justify-between">
+                <div>
+                    <p className="text-sm font-medium text-secondary-500">
+                        {label}
+                    </p>
+                    <p className="mt-1 text-[28px] font-extrabold text-secondary-900 leading-tight">
+                        {typeof value === "number" ? value.toLocaleString() : value}
+                    </p>
+                </div>
                 <div
                     className={cn(
                         "flex h-11 w-11 items-center justify-center rounded-xl",
@@ -64,14 +74,16 @@ export function StatCard({
                 >
                     {icon}
                 </div>
+            </div>
 
+            <div className="mt-2">
                 {trend !== undefined && (
                     <div
                         className={cn(
-                            "flex items-center gap-0.5 rounded-lg px-2 py-1 text-xs font-semibold",
+                            "flex items-center gap-1 text-xs font-medium",
                             trend >= 0
-                                ? "bg-success-50 text-success-600"
-                                : "bg-accent-50 text-accent-600"
+                                ? "text-emerald-600"
+                                : "text-red-500"
                         )}
                     >
                         {trend >= 0 ? (
@@ -79,17 +91,13 @@ export function StatCard({
                         ) : (
                             <TrendingDown className="h-3 w-3" />
                         )}
-                        {Math.abs(trend).toFixed(1)}%
+                        {subtitle || `${Math.abs(trend).toFixed(1)}% from last month`}
                     </div>
                 )}
+                {!trend && subtitle && (
+                    <p className="text-xs text-secondary-500">{subtitle}</p>
+                )}
             </div>
-
-            <p className="mt-3 text-2xl font-extrabold text-secondary-900">
-                {typeof value === "number" ? value.toLocaleString() : value}
-            </p>
-            <p className="mt-0.5 text-sm font-medium text-secondary-500">
-                {label}
-            </p>
         </motion.div>
     );
 }

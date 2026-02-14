@@ -15,6 +15,8 @@ import {
     User,
     Shield,
     Store,
+    MapPin,
+    Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -41,6 +43,8 @@ export default function LoginPage() {
     const [regPhone, setRegPhone] = useState("");
     const [regPassword, setRegPassword] = useState("");
     const [regRole, setRegRole] = useState<Role>("buyer");
+    const [regAddress, setRegAddress] = useState("");
+    const [regCity, setRegCity] = useState("");
 
     /* ─── Login Handler ──────────────────── */
     const handleLogin = async (e: React.FormEvent) => {
@@ -61,10 +65,14 @@ export default function LoginPage() {
             // Force full reload so navbar picks up the new token
             window.location.href = "/";
         } catch (err: any) {
-            setError(
-                err.response?.data?.detail ||
-                "Invalid phone number or password"
-            );
+            const detail = err.response?.data?.detail;
+            if (typeof detail === "string") {
+                setError(detail);
+            } else if (Array.isArray(detail)) {
+                setError(detail.map((e: any) => e.msg).join(", "));
+            } else {
+                setError("Invalid phone number or password");
+            }
         } finally {
             setLoading(false);
         }
@@ -83,6 +91,8 @@ export default function LoginPage() {
                 phone: regPhone,
                 password: regPassword,
                 role: regRole,
+                address_street: regAddress,
+                address_city: regCity,
             });
 
             // Auto-login after register
@@ -96,9 +106,14 @@ export default function LoginPage() {
 
             window.location.href = "/";
         } catch (err: any) {
-            setError(
-                err.response?.data?.detail || "Registration failed"
-            );
+            const detail = err.response?.data?.detail;
+            if (typeof detail === "string") {
+                setError(detail);
+            } else if (Array.isArray(detail)) {
+                setError(detail.map((e: any) => e.msg).join(", "));
+            } else {
+                setError("Registration failed");
+            }
         } finally {
             setLoading(false);
         }
@@ -327,6 +342,48 @@ export default function LoginPage() {
                                             <Eye className="h-4 w-4" />
                                         )}
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* Address */}
+                            <div>
+                                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-secondary-500">
+                                    Address
+                                </label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary-400" />
+                                    <input
+                                        type="text"
+                                        value={regAddress}
+                                        onChange={(e) =>
+                                            setRegAddress(e.target.value)
+                                        }
+                                        placeholder="Street address"
+                                        required
+                                        minLength={2}
+                                        className="h-11 w-full rounded-xl border border-secondary-200 bg-secondary-50 pl-10 pr-4 text-sm text-secondary-900 placeholder:text-secondary-400 transition-all focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-100"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* City */}
+                            <div>
+                                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-secondary-500">
+                                    City
+                                </label>
+                                <div className="relative">
+                                    <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary-400" />
+                                    <input
+                                        type="text"
+                                        value={regCity}
+                                        onChange={(e) =>
+                                            setRegCity(e.target.value)
+                                        }
+                                        placeholder="e.g. Lahore, Karachi"
+                                        required
+                                        minLength={2}
+                                        className="h-11 w-full rounded-xl border border-secondary-200 bg-secondary-50 pl-10 pr-4 text-sm text-secondary-900 placeholder:text-secondary-400 transition-all focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-100"
+                                    />
                                 </div>
                             </div>
 

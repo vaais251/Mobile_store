@@ -8,11 +8,14 @@ import {
     LayoutDashboard,
     ShoppingBag,
     Users,
+    MessageCircle,
     BarChart3,
     Menu,
     X,
     Shield,
     LogOut,
+    Bell,
+    ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,17 +28,22 @@ const NAV_ITEMS = [
     },
     {
         label: "Orders",
-        href: "/admin/dashboard",
+        href: "/admin/orders",
         icon: ShoppingBag,
     },
     {
         label: "Users",
-        href: "/admin/dashboard",
+        href: "/admin/users",
         icon: Users,
     },
     {
+        label: "All Chats",
+        href: "/admin/chats",
+        icon: MessageCircle,
+    },
+    {
         label: "Reports",
-        href: "/admin/dashboard",
+        href: "/admin/reports",
         icon: BarChart3,
     },
 ];
@@ -52,6 +60,7 @@ export default function AdminLayout({
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [authorized, setAuthorized] = useState(false);
+    const [adminName, setAdminName] = useState("Admin");
 
     /* ─── Role Guard ─────────────────────── */
     useEffect(() => {
@@ -69,6 +78,7 @@ export default function AdminLayout({
                 router.push("/");
                 return;
             }
+            setAdminName(payload.name || "Admin");
             setAuthorized(true);
         } catch {
             router.push("/");
@@ -88,43 +98,43 @@ export default function AdminLayout({
         );
     }
 
+    const isActivePath = (href: string) => {
+        if (href === "/admin/dashboard") return pathname === "/admin/dashboard" || pathname === "/admin";
+        return pathname.startsWith(href);
+    };
+
     return (
-        <div className="flex min-h-screen bg-secondary-200">
+        <div className="flex min-h-screen bg-[#F8F9FB]">
             {/* ─── Desktop Sidebar ─────── */}
-            <aside className="hidden w-64 shrink-0 flex-col border-r border-secondary-200 bg-white lg:flex">
+            <aside className="hidden w-[240px] shrink-0 flex-col bg-white border-r border-secondary-200 lg:flex">
                 {/* Brand */}
-                <div className="flex items-center gap-2.5 border-b border-secondary-100 px-6 py-5">
+                <div className="flex items-center gap-2.5 px-6 py-5">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-500">
                         <Shield className="h-5 w-5 text-white" />
                     </div>
-                    <div>
-                        <h1 className="text-sm font-bold text-secondary-900">
-                            PhoneMarket
-                        </h1>
-                        <p className="text-[11px] font-medium text-primary-500">
-                            Admin Panel
-                        </p>
-                    </div>
+                    <h1 className="text-[15px] font-bold text-secondary-900 tracking-tight">
+                        PhoneHub
+                    </h1>
                 </div>
 
                 {/* Nav */}
-                <nav className="flex-1 px-3 py-4">
-                    <ul className="space-y-1">
+                <nav className="flex-1 px-3 py-2">
+                    <ul className="space-y-0.5">
                         {NAV_ITEMS.map((item) => {
                             const Icon = item.icon;
-                            const isActive = pathname === item.href;
+                            const isActive = isActivePath(item.href);
                             return (
                                 <li key={item.label}>
                                     <Link
                                         href={item.href}
                                         className={cn(
-                                            "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
+                                            "flex items-center gap-3 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-all",
                                             isActive
-                                                ? "bg-primary-50 text-primary-600"
+                                                ? "bg-primary-500 text-white shadow-md shadow-primary-500/30"
                                                 : "text-secondary-600 hover:bg-secondary-50 hover:text-secondary-900"
                                         )}
                                     >
-                                        <Icon className="h-4.5 w-4.5" />
+                                        <Icon className={cn("h-[18px] w-[18px]", isActive ? "text-white" : "")} />
                                         {item.label}
                                     </Link>
                                 </li>
@@ -133,14 +143,25 @@ export default function AdminLayout({
                     </ul>
                 </nav>
 
-                {/* Logout */}
-                <div className="border-t border-secondary-100 px-3 py-3">
+                {/* Admin Info + Logout */}
+                <div className="border-t border-secondary-100 px-4 py-3">
+                    <div className="flex items-center gap-3 mb-2 px-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100">
+                            <span className="text-xs font-bold text-primary-600">
+                                {adminName.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-xs font-semibold text-secondary-900 truncate">{adminName}</p>
+                            <p className="text-[10px] text-secondary-500">Super Admin</p>
+                        </div>
+                    </div>
                     <button
                         onClick={() => {
                             localStorage.removeItem("access_token");
                             router.push("/");
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-secondary-500 transition-colors hover:bg-accent-50 hover:text-accent-600"
+                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2 text-xs font-medium text-secondary-500 transition-colors hover:bg-accent-50 hover:text-accent-600"
                     >
                         <LogOut className="h-4 w-4" />
                         Logout
@@ -168,15 +189,15 @@ export default function AdminLayout({
                                 damping: 25,
                                 stiffness: 300,
                             }}
-                            className="fixed inset-y-0 left-0 z-50 w-64 flex-col border-r border-secondary-200 bg-white lg:hidden flex"
+                            className="fixed inset-y-0 left-0 z-50 w-[240px] flex-col bg-white lg:hidden flex"
                         >
-                            <div className="flex items-center justify-between border-b border-secondary-100 px-6 py-5">
+                            <div className="flex items-center justify-between px-6 py-5">
                                 <div className="flex items-center gap-2.5">
                                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-500">
                                         <Shield className="h-5 w-5 text-white" />
                                     </div>
-                                    <span className="text-sm font-bold text-secondary-900">
-                                        Admin
+                                    <span className="text-[15px] font-bold text-secondary-900">
+                                        PhoneHub
                                     </span>
                                 </div>
                                 <button
@@ -187,12 +208,11 @@ export default function AdminLayout({
                                 </button>
                             </div>
 
-                            <nav className="flex-1 px-3 py-4">
-                                <ul className="space-y-1">
+                            <nav className="flex-1 px-3 py-2">
+                                <ul className="space-y-0.5">
                                     {NAV_ITEMS.map((item) => {
                                         const Icon = item.icon;
-                                        const isActive =
-                                            pathname === item.href;
+                                        const isActive = isActivePath(item.href);
                                         return (
                                             <li key={item.label}>
                                                 <Link
@@ -201,13 +221,13 @@ export default function AdminLayout({
                                                         setSidebarOpen(false)
                                                     }
                                                     className={cn(
-                                                        "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
+                                                        "flex items-center gap-3 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-all",
                                                         isActive
-                                                            ? "bg-primary-50 text-primary-600"
+                                                            ? "bg-primary-500 text-white shadow-md shadow-primary-500/30"
                                                             : "text-secondary-600 hover:bg-secondary-50"
                                                     )}
                                                 >
-                                                    <Icon className="h-4 w-4" />
+                                                    <Icon className={cn("h-[18px] w-[18px]", isActive ? "text-white" : "")} />
                                                     {item.label}
                                                 </Link>
                                             </li>
@@ -221,18 +241,32 @@ export default function AdminLayout({
             </AnimatePresence>
 
             {/* ─── Main Content ─────── */}
-            <div className="flex flex-1 flex-col">
-                {/* Top bar (mobile) */}
-                <header className="flex items-center border-b border-secondary-200 bg-white px-4 py-3 lg:hidden">
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="rounded-lg p-1.5 text-secondary-600 hover:bg-secondary-100"
-                    >
-                        <Menu className="h-5 w-5" />
-                    </button>
-                    <span className="ml-3 text-sm font-bold text-secondary-900">
-                        Admin Panel
-                    </span>
+            <div className="flex flex-1 flex-col min-w-0">
+                {/* Top bar */}
+                <header className="flex items-center justify-between border-b border-secondary-200 bg-white px-4 py-3 lg:px-8">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="rounded-lg p-1.5 text-secondary-600 hover:bg-secondary-100 lg:hidden"
+                        >
+                            <Menu className="h-5 w-5" />
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button className="relative rounded-xl p-2 text-secondary-500 hover:bg-secondary-50 transition-colors">
+                            <Bell className="h-5 w-5" />
+                            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent-500" />
+                        </button>
+                        <div className="hidden lg:flex items-center gap-2 rounded-xl bg-secondary-50 px-3 py-1.5 cursor-pointer hover:bg-secondary-100 transition-colors">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-500">
+                                <span className="text-[10px] font-bold text-white">
+                                    {adminName.charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                            <span className="text-xs font-medium text-secondary-700">{adminName}</span>
+                            <ChevronDown className="h-3 w-3 text-secondary-400" />
+                        </div>
+                    </div>
                 </header>
 
                 {/* Page content */}

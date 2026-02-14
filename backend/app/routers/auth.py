@@ -72,7 +72,7 @@ async def register(
         location_long=payload.location_long,
     )
 
-    # Store hashed password (add column to user model via property)
+    # Store hashed password
     user.hashed_password = hash_password(payload.password)
 
     db.add(user)
@@ -108,7 +108,11 @@ async def login(
             detail="Invalid phone number or password",
         )
 
-    access_token = create_access_token(data={"sub": str(user.id)})
+    access_token = create_access_token(data={
+        "sub": str(user.id),
+        "role": user.role.value if hasattr(user.role, 'value') else str(user.role),
+        "name": user.name,
+    })
 
     return TokenResponse(
         access_token=access_token,

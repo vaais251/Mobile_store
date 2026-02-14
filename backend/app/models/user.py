@@ -43,8 +43,8 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     is_individual: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # ─── Address ──────────────────────────────
-    address_street: Mapped[str | None] = mapped_column(Text, nullable=True)
-    address_city: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    address_street: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    address_city: Mapped[str] = mapped_column(String(100), nullable=False, default="")
 
     # ─── Location ─────────────────────────────
     location_lat: Mapped[float | None] = mapped_column(Float, nullable=True)
