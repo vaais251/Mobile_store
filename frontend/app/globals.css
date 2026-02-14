@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base Overrides ──────────────────────── */
+@layer base {
+  :root {
+    --color-primary: 0, 122, 255;
+    --color-secondary: 245, 245, 247;
+    --color-accent: 255, 59, 48;
+  }
+
+  body {
+    @apply bg-secondary-200 text-secondary-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better focus outlines */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+}
+
+/* ─── Component Utilities ─────────────────── */
+@layer components {
+
+  /* Premium elevated card shadow (Apple-style) */
+  .premium-shadow {
+    box-shadow:
+      0 4px 24px -1px rgba(0, 0, 0, 0.06),
+      0 2px 8px -1px rgba(0, 0, 0, 0.04);
+  }
+
+  .premium-shadow-lg {
+    box-shadow:
+      0 8px 40px -4px rgba(0, 0, 0, 0.08),
+      0 4px 16px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .premium-shadow-xl {
+    box-shadow:
+      0 16px 64px -8px rgba(0, 0, 0, 0.1),
+      0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Glassmorphism card */
+  .glass-card {
+    @apply rounded-2xl border border-white/20 bg-white/70 backdrop-blur-xl;
+    box-shadow:
+      0 4px 24px -1px rgba(0, 0, 0, 0.06),
+      0 2px 8px -1px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Active press state for interactive cards */
+  .press-effect {
+    @apply transition-transform duration-150 active:scale-[0.98];
+  }
+}
+
+/* ─── Custom Scrollbar ────────────────────── */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme("colors.secondary.400") transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-secondary-400;
+  }
+}
+
+/* ─── Range Slider ───────────────────────── */
+.slider-primary {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  background: linear-gradient(to right,
+      #007AFF 0%,
+      #007AFF calc((var(--val, 7) - 1) / 9 * 100%),
+      #D2D2D7 calc((var(--val, 7) - 1) / 9 * 100%),
+      #D2D2D7 100%);
+}
+
+.slider-primary::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #007AFF;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.slider-primary::-webkit-slider-thumb:hover {
+  box-shadow: 0 2px 12px rgba(0, 122, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.slider-primary::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+.slider-primary::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #007AFF;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+  cursor: pointer;
+}
+
+.slider-primary::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: #D2D2D7;
+}
+
+.slider-primary::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: #007AFF;
+}
