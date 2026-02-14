@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, SlidersHorizontal, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,18 @@ const quickFilters = [
 ];
 
 export function HeroSection() {
+    const router = useRouter();
     const [query, setQuery] = useState("");
     const [activeFilter, setActiveFilter] = useState("All");
+
+    const handleSearch = () => {
+        const q = query.trim();
+        if (q) {
+            router.push(`/search?q=${encodeURIComponent(q)}`);
+        } else {
+            router.push("/search");
+        }
+    };
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-white via-secondary-50 to-secondary-200 px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:px-8">
@@ -62,6 +73,9 @@ export function HeroSection() {
                                 onChange={(e) => setQuery(e.target.value)}
                                 placeholder="Search by brand, model, or keyword..."
                                 className="w-full bg-transparent py-2.5 text-sm text-secondary-900 placeholder:text-secondary-400 focus:outline-none sm:text-base"
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleSearch();
+                                }}
                             />
                         </div>
 
@@ -77,7 +91,7 @@ export function HeroSection() {
                         </button>
 
                         {/* Search button */}
-                        <Button size="md" className="shrink-0 rounded-xl px-6">
+                        <Button size="md" className="shrink-0 rounded-xl px-6" onClick={handleSearch}>
                             Search
                         </Button>
                     </div>
