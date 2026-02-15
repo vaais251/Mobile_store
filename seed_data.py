@@ -1,8 +1,9 @@
 """
 PhoneMarket — Seed Data Script.
 
-Populates the database with test users, listings, an order, and chat messages
-by hitting the local API at http://localhost:8000.
+Populates the database with 3 test users, 5 phone listings (each with 2 AI-
+generated images), an order, and chat messages by hitting the local API at
+http://localhost:8000.
 
 Usage:
     pip install requests
@@ -11,9 +12,10 @@ Usage:
 
 import requests
 import random
-import time
 
 BASE_URL = "http://localhost:8000/api/v1"
+STATIC_URL = "http://localhost:8000/static/seed_images"
+
 
 # ─── Karachi-area random coordinates ─────────
 def rand_coord():
@@ -43,43 +45,37 @@ def seed():
         "phone": "0300-0000000",
         "password": "admin123",
         "role": "admin",
+        "address_street": "123 Admin Tower, I.I. Chundrigar Road",
+        "address_city": "Karachi",
+        "location_lat": 24.8607,
+        "location_long": 67.0011,
     }
     admin_token = register_and_login(admin)
     print(f"  ✅  Admin   → {admin['phone']} / {admin['password']}")
 
-    # ── 2. Sellers ────────────────────────────
-    sellers = [
-        {
-            "name": "MobileShop 1",
-            "phone": "0311-1234567",
-            "password": "password123",
-            "role": "seller",
-            "address_city": "Karachi",
-            "location_lat": 24.8607,
-            "location_long": 67.0011,
-        },
-        {
-            "name": "John Doe",
-            "phone": "0322-7654321",
-            "password": "password123",
-            "role": "seller",
-            "address_city": "Lahore",
-            "location_lat": 31.5204,
-            "location_long": 74.3587,
-        },
-    ]
-
-    seller_tokens = []
-    for s in sellers:
-        seller_tokens.append(register_and_login(s))
-    print(f"  ✅  Sellers  → {len(sellers)} created")
+    # ── 2. Seller ─────────────────────────────
+    seller = {
+        "name": "Ali Mobile Zone",
+        "phone": "0311-1234567",
+        "password": "password123",
+        "role": "seller",
+        "address_street": "Shop #42, Mobile Market, Saddar",
+        "address_city": "Karachi",
+        "shop_name": "Ali Mobile Zone",
+        "is_individual": False,
+        "location_lat": 24.8607,
+        "location_long": 67.0011,
+    }
+    seller_token = register_and_login(seller)
+    print(f"  ✅  Seller  → {seller['phone']} / {seller['password']}")
 
     # ── 3. Buyer ──────────────────────────────
     buyer = {
-        "name": "Test Buyer",
+        "name": "Ahmed Khan",
         "phone": "0333-5555555",
         "password": "password123",
         "role": "buyer",
+        "address_street": "House 12, Block 5, Clifton",
         "address_city": "Karachi",
         "location_lat": 24.8700,
         "location_long": 67.0300,
@@ -87,7 +83,7 @@ def seed():
     buyer_token = register_and_login(buyer)
     print(f"  ✅  Buyer   → {buyer['phone']} / {buyer['password']}")
 
-    # ── 4. Listings ───────────────────────────
+    # ── 4. Listings (5 phones, 2 images each) ─
     listings_data = [
         {
             "brand": "Apple",
@@ -102,6 +98,13 @@ def seed():
             "condition_rating": 9,
             "pta_approved": True,
             "is_locally_used": True,
+            "defects_description": "Minor scratch on the back glass, barely visible.",
+            "accessories_included": ["Charger", "Original Box"],
+            "thumbnail_image": f"{STATIC_URL}/iphone15pro_front.png",
+            "additional_images": [
+                f"{STATIC_URL}/iphone15pro_front.png",
+                f"{STATIC_URL}/iphone15pro_back.png",
+            ],
         },
         {
             "brand": "Samsung",
@@ -116,6 +119,13 @@ def seed():
             "condition_rating": 10,
             "pta_approved": True,
             "is_locally_used": True,
+            "defects_description": "No defects. Phone is in mint condition.",
+            "accessories_included": ["S Pen", "Charger", "Case", "Original Box"],
+            "thumbnail_image": f"{STATIC_URL}/galaxy_s24_ultra_front.png",
+            "additional_images": [
+                f"{STATIC_URL}/galaxy_s24_ultra_front.png",
+                f"{STATIC_URL}/galaxy_s24_ultra_back.png",
+            ],
         },
         {
             "brand": "Google",
@@ -130,6 +140,13 @@ def seed():
             "condition_rating": 8,
             "pta_approved": False,
             "is_locally_used": False,
+            "defects_description": "Screen has factory screen protector only.",
+            "accessories_included": ["Charger"],
+            "thumbnail_image": f"{STATIC_URL}/pixel8pro_front.png",
+            "additional_images": [
+                f"{STATIC_URL}/pixel8pro_front.png",
+                f"{STATIC_URL}/pixel8pro_back.png",
+            ],
         },
         {
             "brand": "Apple",
@@ -144,6 +161,13 @@ def seed():
             "condition_rating": 7,
             "pta_approved": True,
             "is_locally_used": False,
+            "defects_description": "Small dent on the corner, fully functional.",
+            "accessories_included": ["Charger"],
+            "thumbnail_image": f"{STATIC_URL}/iphone14_front.png",
+            "additional_images": [
+                f"{STATIC_URL}/iphone14_front.png",
+                f"{STATIC_URL}/iphone14_back.png",
+            ],
         },
         {
             "brand": "Xiaomi",
@@ -156,25 +180,29 @@ def seed():
             "camera_resolution_mp": 50,
             "processor_name": "Snapdragon 8 Gen 3",
             "warranty_period": "12 months",
+            "thumbnail_image": f"{STATIC_URL}/xiaomi14ultra_front.png",
+            "additional_images": [
+                f"{STATIC_URL}/xiaomi14ultra_front.png",
+                f"{STATIC_URL}/xiaomi14ultra_back.png",
+            ],
         },
     ]
 
     listing_ids = []
-    for i, listing in enumerate(listings_data):
+    for listing in listings_data:
         lat, lng = rand_coord()
         listing["location_lat"] = lat
         listing["location_long"] = lng
 
-        token = seller_tokens[i % len(seller_tokens)]
         r = requests.post(
             f"{BASE_URL}/listings/",
             json=listing,
-            headers={"Authorization": f"Bearer {token}"},
+            headers={"Authorization": f"Bearer {seller_token}"},
         )
         r.raise_for_status()
         listing_ids.append(r.json()["id"])
 
-    print(f"  ✅  Listings → {len(listings_data)} created")
+    print(f"  ✅  Listings → {len(listings_data)} created (each with 2 images)")
 
     # ── 5. Order ──────────────────────────────
     r = requests.post(
@@ -200,11 +228,9 @@ def seed():
         ws_url = f"ws://localhost:8000/ws/chat/{order_id}"
 
         async with websockets.connect(f"{ws_url}?token={buyer_token}") as buyer_ws:
-            # Read join message
             await buyer_ws.recv()
 
-            async with websockets.connect(f"{ws_url}?token={seller_tokens[0]}") as seller_ws:
-                # Read join messages
+            async with websockets.connect(f"{ws_url}?token={seller_token}") as seller_ws:
                 await seller_ws.recv()
                 await buyer_ws.recv()
 
@@ -228,7 +254,7 @@ def seed():
 
                 # Buyer responds
                 await buyer_ws.send(json.dumps({
-                    "content": "Great! I can meet tomorrow at Liberty Market. Is 3 PM okay?",
+                    "content": "Great! I can meet tomorrow at Saddar. Is 3 PM okay?",
                     "recipient_type": "group",
                     "message_type": "text",
                 }))
@@ -243,7 +269,7 @@ def seed():
     print("\n🎉  Seeding complete!")
     print(f"\n   Admin login:  {admin['phone']} / {admin['password']}")
     print(f"   Buyer login:  {buyer['phone']} / {buyer['password']}")
-    print(f"   Seller login: {sellers[0]['phone']} / {sellers[0]['password']}")
+    print(f"   Seller login: {seller['phone']} / {seller['password']}")
     print(f"\n   Frontend:     http://localhost:3000")
     print(f"   Backend:      http://localhost:8000/docs")
 

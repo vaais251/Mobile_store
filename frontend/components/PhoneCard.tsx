@@ -33,6 +33,7 @@ export interface ListingData {
     battery_health_percent?: number | null;
     seller_name?: string;
     status?: string;
+    created_at?: string;
     /* Detail fields */
     description?: string | null;
     images?: string[];
@@ -44,6 +45,16 @@ export interface ListingData {
     seller_rating?: number | null;
     seller_verified?: boolean | null;
     location_address?: string | null;
+    /* Extended detail fields from backend */
+    battery_capacity_mah?: number | null;
+    camera_resolution_mp?: number | null;
+    accessories_included?: { items?: string[] } | null;
+    defects_description?: string | null;
+    seller_shop_name?: string | null;
+    seller_is_individual?: boolean | null;
+    processor_name?: string | null;
+    additional_images?: { urls?: string[] } | null;
+    updated_at?: string;
 }
 
 interface PhoneCardProps {

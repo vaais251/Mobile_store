@@ -10,15 +10,21 @@ Mounts:
   • WebSocket chat at /ws/chat/{order_id} (direct on app)
 """
 
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api import router as api_router
 from app.core.config import get_settings
 from app.core.database import engine
 from app.routers.chat import websocket_chat
+
+# Resolve the static directory relative to this file
+_STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 settings = get_settings()
 
@@ -56,6 +62,10 @@ app.add_middleware(
 
 # ─── REST Routers ────────────────────────────
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+# ─── Static Files ────────────────────────────
+if _STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
 # ─── WebSocket Routes ────────────────────────
 app.websocket("/ws/chat/{order_id}")(websocket_chat)

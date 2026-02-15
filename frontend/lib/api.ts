@@ -7,7 +7,7 @@ import axios from "axios";
  * Interceptor: Automatically attaches JWT from localStorage as Bearer token.
  */
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
     timeout: 15_000,
     headers: {
         "Content-Type": "application/json",

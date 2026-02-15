@@ -46,179 +46,6 @@ const brands = [
 const RAM_OPTIONS = [4, 6, 8, 12, 16];
 const STORAGE_OPTIONS = [64, 128, 256, 512];
 
-/* ─── Mock Data ─────────────────────────────── */
-const MOCK_LISTINGS: ListingData[] = [
-    {
-        id: "n1",
-        brand: "Apple",
-        model: "iPhone 15 Pro",
-        price: 450000,
-        phone_type: "used",
-        ram_gb: 8,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "Clifton, Karachi",
-        distance_km: 1.2,
-        condition_rating: 9,
-        pta_approved: true,
-        is_locally_used: true,
-        battery_health_percent: 92,
-    },
-    {
-        id: "n2",
-        brand: "Samsung",
-        model: "Galaxy S24 Ultra",
-        price: 315000,
-        phone_type: "new",
-        ram_gb: 12,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "DHA, Lahore",
-        distance_km: 2.5,
-        condition_rating: null,
-    },
-    {
-        id: "n3",
-        brand: "Google",
-        model: "Pixel 8",
-        price: 165000,
-        phone_type: "used",
-        ram_gb: 8,
-        storage_gb: 128,
-        thumbnail_image: null,
-        location_city: "Gulshan, Karachi",
-        distance_km: 3.1,
-        condition_rating: 8,
-        pta_approved: false,
-        is_locally_used: false,
-        battery_health_percent: 95,
-    },
-    {
-        id: "n4",
-        brand: "Samsung",
-        model: "Galaxy Z Fold 5",
-        price: 380000,
-        phone_type: "used",
-        ram_gb: 12,
-        storage_gb: 512,
-        thumbnail_image: null,
-        location_city: "F-7, Islamabad",
-        distance_km: 0.8,
-        condition_rating: 9,
-        pta_approved: true,
-        is_locally_used: true,
-        battery_health_percent: 88,
-    },
-    {
-        id: "l1",
-        brand: "Apple",
-        model: "iPhone 14 Pro Max",
-        price: 435000,
-        phone_type: "used",
-        ram_gb: 6,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "Lahore",
-        condition_rating: 9,
-        pta_approved: null,
-        is_locally_used: true,
-        battery_health_percent: 96,
-    },
-    {
-        id: "l2",
-        brand: "Google",
-        model: "Pixel 7 Pro",
-        price: 130000,
-        phone_type: "new",
-        ram_gb: 12,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "Islamabad",
-        condition_rating: null,
-    },
-    {
-        id: "l3",
-        brand: "Apple",
-        model: "iPhone 13 Mini",
-        price: 114000,
-        phone_type: "used",
-        ram_gb: 4,
-        storage_gb: 128,
-        thumbnail_image: null,
-        location_city: "Rawalpindi",
-        condition_rating: 8,
-        pta_approved: true,
-        is_locally_used: false,
-        battery_health_percent: 85,
-    },
-    {
-        id: "l4",
-        brand: "OnePlus",
-        model: "12R",
-        price: 125000,
-        phone_type: "new",
-        ram_gb: 8,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "Faisalabad",
-        condition_rating: null,
-    },
-    {
-        id: "l5",
-        brand: "Xiaomi",
-        model: "14 Ultra",
-        price: 175000,
-        phone_type: "new",
-        ram_gb: 16,
-        storage_gb: 512,
-        thumbnail_image: null,
-        location_city: "Multan",
-        condition_rating: null,
-    },
-    {
-        id: "l6",
-        brand: "Samsung",
-        model: "Galaxy Z Flip 5",
-        price: 195000,
-        phone_type: "used",
-        ram_gb: 8,
-        storage_gb: 256,
-        thumbnail_image: null,
-        location_city: "F-7, Islamabad",
-        condition_rating: 8,
-        pta_approved: true,
-        is_locally_used: true,
-        battery_health_percent: 90,
-    },
-    {
-        id: "l7",
-        brand: "Apple",
-        model: "iPhone 12",
-        price: 95000,
-        phone_type: "used",
-        ram_gb: 4,
-        storage_gb: 128,
-        thumbnail_image: null,
-        location_city: "Peshawar",
-        condition_rating: 7,
-        pta_approved: true,
-        is_locally_used: false,
-        battery_health_percent: 82,
-    },
-    {
-        id: "l8",
-        brand: "OnePlus",
-        model: "Nord CE 3",
-        price: 52000,
-        phone_type: "new",
-        ram_gb: 8,
-        storage_gb: 128,
-        thumbnail_image: null,
-        location_city: "Hyderabad",
-        condition_rating: null,
-    },
-];
-
 const ITEMS_PER_PAGE = 8;
 
 /* ─── Stats data ───────────────────────────── */
@@ -259,13 +86,9 @@ export default function HomePage() {
             try {
                 const res = await api.get("/api/v1/listings/");
                 const items = res.data?.items || [];
-                if (items.length > 0) {
-                    setAllListings(items);
-                } else {
-                    setAllListings(MOCK_LISTINGS);
-                }
+                setAllListings(items);
             } catch {
-                setAllListings(MOCK_LISTINGS);
+                setAllListings([]);
             } finally {
                 setLoading(false);
             }
@@ -326,6 +149,7 @@ export default function HomePage() {
 
     /* ─── Active filter count ───────────── */
     const activeFilterCount = [
+        searchQuery,
         activeType,
         activeBrand,
         priceMin,
@@ -438,6 +262,32 @@ export default function HomePage() {
                     >
                         🔄 Used
                     </button>
+                </div>
+            </div>
+
+            {/* Brand */}
+            <div>
+                <label className="text-xs font-bold text-secondary-800 uppercase tracking-wider">
+                    Brand
+                </label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                    {brands.filter(b => b.query).map((brand) => (
+                        <button
+                            key={brand.name}
+                            onClick={() => {
+                                setActiveBrand(activeBrand === brand.query ? null : brand.query);
+                                setCurrentPage(1);
+                            }}
+                            className={cn(
+                                "rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all duration-200",
+                                activeBrand === brand.query
+                                    ? "border-primary-500 bg-primary-500 text-white shadow-md shadow-primary-500/25"
+                                    : "border-secondary-200 bg-white text-secondary-600 hover:border-primary-200 hover:bg-primary-50"
+                            )}
+                        >
+                            {brand.icon} {brand.name}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -795,6 +645,7 @@ export default function HomePage() {
                                 </h2>
                                 <p className="text-xs text-secondary-500">
                                     {sorted.length} phones available
+                                    {activeBrand && ` · ${brands.find(b => b.query === activeBrand)?.name || activeBrand}`}
                                     {activeType && ` · ${activeType === "new" ? "Brand New" : "Pre-owned"}`}
                                     {city && ` · in ${city}`}
                                 </p>
@@ -1000,6 +851,15 @@ export default function HomePage() {
                                     className="mb-4 flex flex-wrap items-center gap-2"
                                 >
                                     <span className="text-xs text-secondary-500">Active:</span>
+                                    {searchQuery && (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-secondary-100 px-3 py-1 text-xs font-medium text-secondary-700 ring-1 ring-secondary-200">
+                                            <Search className="h-3 w-3" />
+                                            &ldquo;{searchQuery}&rdquo;
+                                            <button onClick={() => { setSearchQuery(""); setCurrentPage(1); }}>
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </span>
+                                    )}
                                     {activeType && (
                                         <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 ring-1 ring-primary-100">
                                             {activeType === "new" ? "✨ New" : "🔄 Used"}
