@@ -41,6 +41,7 @@ class PhoneListingCreate(BaseModel):
     # Used-specific (conditionally required)
     battery_health_percent: int | None = Field(None, ge=0, le=100)
     pta_approved: bool | None = None
+    is_locally_used: bool | None = None
     condition_rating: int | None = Field(None, ge=1, le=10)
     defects_description: str | None = None
     accessories_included: list[str] | None = None
@@ -62,6 +63,8 @@ class PhoneListingCreate(BaseModel):
                 missing.append("battery_health_percent")
             if self.pta_approved is None:
                 missing.append("pta_approved")
+            if self.is_locally_used is None:
+                missing.append("is_locally_used")
             if self.condition_rating is None:
                 missing.append("condition_rating")
             if missing:
@@ -102,6 +105,7 @@ class PhoneFilter(BaseModel):
     storage_gb: int | None = Field(None, gt=0)
 
     pta_approved: bool | None = None
+    is_locally_used: bool | None = None
 
     # Geo proximity
     lat: float | None = Field(None, ge=-90, le=90)
@@ -129,6 +133,10 @@ class PhoneListingOut(BaseModel):
     storage_gb: int
     thumbnail_image: str | None = None
 
+    # Used-phone display fields
+    pta_approved: bool | None = None
+    is_locally_used: bool | None = None
+
     # Location (resolved: listing override or seller fallback)
     location_lat: float | None = None
     location_long: float | None = None
@@ -153,6 +161,7 @@ class PhoneListingDetail(PhoneListingOut):
     # Used-specific
     battery_health_percent: int | None = None
     pta_approved: bool | None = None
+    is_locally_used: bool | None = None
     condition_rating: int | None = None
     defects_description: str | None = None
     accessories_included: Any | None = None

@@ -62,6 +62,7 @@ const initialFormData: ListingFormData = {
     condition: "used",
     batteryHealth: "",
     ptaApproved: false,
+    isLocallyUsed: true,
     defects: "",
     warrantyPeriod: "",
     processor: "",
@@ -521,6 +522,41 @@ export function ListingWizard() {
                                     className={cn(
                                         "absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200",
                                         formData.ptaApproved &&
+                                        "translate-x-5"
+                                    )}
+                                />
+                            </button>
+                        </div>
+
+                        {/* Locally Used Toggle */}
+                        <div className="flex items-center justify-between rounded-xl border border-secondary-200 bg-secondary-50 px-4 py-3">
+                            <div>
+                                <p className="text-sm font-semibold text-secondary-800">
+                                    Locally Used
+                                </p>
+                                <p className="text-xs text-secondary-500">
+                                    Phone was used in Pakistan
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    updateField(
+                                        "isLocallyUsed",
+                                        !formData.isLocallyUsed
+                                    )
+                                }
+                                className={cn(
+                                    "relative h-7 w-12 rounded-full transition-colors duration-200",
+                                    formData.isLocallyUsed
+                                        ? "bg-primary-500"
+                                        : "bg-secondary-300"
+                                )}
+                            >
+                                <span
+                                    className={cn(
+                                        "absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200",
+                                        formData.isLocallyUsed &&
                                         "translate-x-5"
                                     )}
                                 />

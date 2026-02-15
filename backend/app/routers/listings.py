@@ -99,6 +99,7 @@ async def create_listing(
         # Used-specific
         battery_health_percent=payload.battery_health_percent,
         pta_approved=payload.pta_approved,
+        is_locally_used=payload.is_locally_used,
         condition_rating=payload.condition_rating,
         defects_description=payload.defects_description,
         accessories_included=(
@@ -132,6 +133,8 @@ async def create_listing(
         location_lat=listing.location_lat,
         location_long=listing.location_long,
         location_city=current_user.address_city,
+        pta_approved=listing.pta_approved,
+        is_locally_used=listing.is_locally_used,
         created_at=listing.created_at,
     )
 
@@ -154,6 +157,7 @@ async def search_listings(
     ram_gb: list[int] | None = Query(None, description="e.g. ram_gb=4&ram_gb=8"),
     storage_gb: int | None = Query(None, gt=0),
     pta_approved: bool | None = None,
+    is_locally_used: bool | None = None,
     # Geo
     lat: float | None = Query(None, ge=-90, le=90),
     long: float | None = Query(None, ge=-180, le=180),
@@ -202,6 +206,8 @@ async def search_listings(
         query = query.where(PhoneListing.storage_gb == storage_gb)
     if pta_approved is not None:
         query = query.where(PhoneListing.pta_approved == pta_approved)
+    if is_locally_used is not None:
+        query = query.where(PhoneListing.is_locally_used == is_locally_used)
 
     # ── Geo distance ──
     distance_col = None
@@ -255,6 +261,8 @@ async def search_listings(
                 location_long=listing.location_long,
                 location_city=city,
                 distance_km=round(dist, 2) if dist is not None else None,
+                pta_approved=listing.pta_approved,
+                is_locally_used=listing.is_locally_used,
                 created_at=listing.created_at,
             )
         )
@@ -324,6 +332,7 @@ async def get_listing_detail(
         # Used-specific
         battery_health_percent=listing.battery_health_percent,
         pta_approved=listing.pta_approved,
+        is_locally_used=listing.is_locally_used,
         condition_rating=listing.condition_rating,
         defects_description=listing.defects_description,
         accessories_included=listing.accessories_included,

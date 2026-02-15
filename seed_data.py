@@ -101,6 +101,7 @@ def seed():
             "battery_health_percent": 98,
             "condition_rating": 9,
             "pta_approved": True,
+            "is_locally_used": True,
         },
         {
             "brand": "Samsung",
@@ -114,6 +115,7 @@ def seed():
             "battery_health_percent": 100,
             "condition_rating": 10,
             "pta_approved": True,
+            "is_locally_used": True,
         },
         {
             "brand": "Google",
@@ -127,6 +129,7 @@ def seed():
             "battery_health_percent": 95,
             "condition_rating": 8,
             "pta_approved": False,
+            "is_locally_used": False,
         },
         {
             "brand": "Apple",
@@ -140,6 +143,7 @@ def seed():
             "battery_health_percent": 90,
             "condition_rating": 7,
             "pta_approved": True,
+            "is_locally_used": False,
         },
         {
             "brand": "Xiaomi",
@@ -152,7 +156,6 @@ def seed():
             "camera_resolution_mp": 50,
             "processor_name": "Snapdragon 8 Gen 3",
             "warranty_period": "12 months",
-            "pta_approved": True,
         },
     ]
 

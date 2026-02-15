@@ -82,6 +82,9 @@ class PhoneListing(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         SmallInteger, nullable=True
     )
     pta_approved: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    is_locally_used: Mapped[bool | None] = mapped_column(
+        Boolean, nullable=True, comment="Whether the phone was used locally in Pakistan"
+    )
     condition_rating: Mapped[int | None] = mapped_column(
         SmallInteger, nullable=True, comment="1-10 scale"
     )

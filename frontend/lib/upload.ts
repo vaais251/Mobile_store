@@ -11,6 +11,7 @@ export interface ListingFormData {
     condition: "new" | "used";
     batteryHealth: string;
     ptaApproved: boolean;
+    isLocallyUsed: boolean;
     defects: string;
     warrantyPeriod: string;
     processor: string;
@@ -44,11 +45,12 @@ export async function submitListing(data: ListingFormData) {
     fd.append("ram", data.ram);
     fd.append("color", data.color);
     fd.append("physical_condition", String(data.physicalCondition));
-    fd.append("pta_approved", String(data.ptaApproved));
 
     // Condition-specific fields
     if (data.condition === "used") {
         fd.append("battery_health", data.batteryHealth);
+        fd.append("pta_approved", String(data.ptaApproved));
+        fd.append("is_locally_used", String(data.isLocallyUsed));
         fd.append("defects", data.defects);
     } else {
         fd.append("warranty_period", data.warrantyPeriod);

@@ -45,7 +45,6 @@ const MOCK_LISTINGS: ListingData[] = [
         location_lat: 24.8131,
         location_long: 67.0295,
         condition_rating: null,
-        pta_approved: true,
         battery_health_percent: 100,
     },
     {
@@ -62,6 +61,7 @@ const MOCK_LISTINGS: ListingData[] = [
         location_long: 67.0892,
         condition_rating: 8,
         pta_approved: false,
+        is_locally_used: false,
         battery_health_percent: 89,
     },
     {
@@ -78,6 +78,7 @@ const MOCK_LISTINGS: ListingData[] = [
         location_long: 67.3494,
         condition_rating: 8,
         pta_approved: true,
+        is_locally_used: true,
         battery_health_percent: 92,
     },
     {
@@ -93,7 +94,6 @@ const MOCK_LISTINGS: ListingData[] = [
         location_lat: 33.5651,
         location_long: 73.0169,
         condition_rating: null,
-        pta_approved: null,
         battery_health_percent: null,
     },
     {
@@ -110,6 +110,7 @@ const MOCK_LISTINGS: ListingData[] = [
         location_long: 74.3762,
         condition_rating: 9,
         pta_approved: true,
+        is_locally_used: true,
         battery_health_percent: 93,
     },
     {
@@ -126,6 +127,7 @@ const MOCK_LISTINGS: ListingData[] = [
         location_long: 73.0735,
         condition_rating: 8,
         pta_approved: true,
+        is_locally_used: true,
         battery_health_percent: 90,
     },
     {
@@ -141,7 +143,6 @@ const MOCK_LISTINGS: ListingData[] = [
         location_lat: 31.4504,
         location_long: 73.135,
         condition_rating: null,
-        pta_approved: true,
     },
     {
         id: "s8",
@@ -157,6 +158,7 @@ const MOCK_LISTINGS: ListingData[] = [
         location_long: 71.5249,
         condition_rating: 7,
         pta_approved: true,
+        is_locally_used: false,
         battery_health_percent: 82,
     },
     {
@@ -172,7 +174,6 @@ const MOCK_LISTINGS: ListingData[] = [
         location_lat: 34.0151,
         location_long: 71.5249,
         condition_rating: null,
-        pta_approved: null,
     },
 ];
 
@@ -208,6 +209,8 @@ function SearchContent() {
     const [city, setCity] = useState("");
     const [ptaApproved, setPtaApproved] = useState(false);
     const [nonPta, setNonPta] = useState(false);
+    const [locallyUsed, setLocallyUsed] = useState(false);
+    const [imported, setImported] = useState(false);
     const [selectedRam, setSelectedRam] = useState<number | null>(null);
     const [selectedStorage, setSelectedStorage] = useState<number[]>([]);
     const [batteryMin, setBatteryMin] = useState(0);
@@ -252,9 +255,12 @@ function SearchContent() {
             !l.location_city.toLowerCase().includes(city.toLowerCase())
         )
             return false;
-        // PTA
-        if (ptaApproved && !l.pta_approved) return false;
-        if (nonPta && l.pta_approved !== false) return false;
+        // PTA — only for used phones
+        if (ptaApproved && (l.phone_type !== "used" || !l.pta_approved)) return false;
+        if (nonPta && (l.phone_type !== "used" || l.pta_approved !== false)) return false;
+        // Locally Used — only for used phones
+        if (locallyUsed && (l.phone_type !== "used" || !l.is_locally_used)) return false;
+        if (imported && (l.phone_type !== "used" || l.is_locally_used !== false)) return false;
         // RAM
         if (selectedRam && l.ram_gb !== selectedRam) return false;
         // Storage
@@ -303,6 +309,8 @@ function SearchContent() {
         setCity("");
         setPtaApproved(false);
         setNonPta(false);
+        setLocallyUsed(false);
+        setImported(false);
         setSelectedRam(null);
         setSelectedStorage([]);
         setBatteryMin(0);
@@ -409,10 +417,11 @@ function SearchContent() {
                                     </div>
                                 </div>
 
-                                {/* PTA Status */}
+                                {/* PTA Status — used phones only */}
                                 <div className="mt-5">
                                     <label className="text-xs font-bold text-secondary-800">
                                         PTA Status
+                                        <span className="ml-1 text-[10px] font-normal text-secondary-400">(used only)</span>
                                     </label>
                                     <div className="mt-2 space-y-2">
                                         <label className="flex cursor-pointer items-center gap-2">
@@ -449,6 +458,55 @@ function SearchContent() {
                                             />
                                             <span className="text-sm text-secondary-700">
                                                 Non-PTA
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Usage Origin — used phones only */}
+                                <div className="mt-5">
+                                    <label className="text-xs font-bold text-secondary-800">
+                                        Usage Origin
+                                        <span className="ml-1 text-[10px] font-normal text-secondary-400">(used only)</span>
+                                    </label>
+                                    <div className="mt-2 space-y-2">
+                                        <label className="flex cursor-pointer items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={locallyUsed}
+                                                onChange={(e) => {
+                                                    setLocallyUsed(
+                                                        e.target.checked
+                                                    );
+                                                    if (e.target.checked)
+                                                        setImported(false);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className="h-4 w-4 rounded border-secondary-300 text-primary-500 focus:ring-primary-500"
+                                            />
+                                            <div className="flex items-center gap-1.5">
+                                                <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                                                <span className="text-sm text-secondary-700">
+                                                    Locally Used
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label className="flex cursor-pointer items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={imported}
+                                                onChange={(e) => {
+                                                    setImported(
+                                                        e.target.checked
+                                                    );
+                                                    if (e.target.checked)
+                                                        setLocallyUsed(false);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className="h-4 w-4 rounded border-secondary-300 text-primary-500 focus:ring-primary-500"
+                                            />
+                                            <span className="text-sm text-secondary-700">
+                                                Imported
                                             </span>
                                         </label>
                                     </div>

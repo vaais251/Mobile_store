@@ -29,6 +29,7 @@ export interface ListingData {
     distance_km?: number | null;
     condition_rating?: number | null;
     pta_approved?: boolean | null;
+    is_locally_used?: boolean | null;
     battery_health_percent?: number | null;
     seller_name?: string;
     status?: string;
@@ -74,6 +75,7 @@ export function PhoneCard({
         distance_km,
         condition_rating,
         pta_approved,
+        is_locally_used,
         storage_gb,
         ram_gb,
         battery_health_percent,
@@ -133,7 +135,8 @@ export function PhoneCard({
                         >
                             {phone_type}
                         </span>
-                        {pta_approved !== null && pta_approved !== undefined && (
+                        {/* PTA badge — only for used phones */}
+                        {phone_type === "used" && pta_approved !== null && pta_approved !== undefined && (
                             <span
                                 className={cn(
                                     "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white",
@@ -143,6 +146,19 @@ export function PhoneCard({
                                 )}
                             >
                                 {pta_approved ? "PTA Approved" : "Non-PTA"}
+                            </span>
+                        )}
+                        {/* Locally Used badge — only for used phones */}
+                        {phone_type === "used" && is_locally_used !== null && is_locally_used !== undefined && (
+                            <span
+                                className={cn(
+                                    "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white",
+                                    is_locally_used
+                                        ? "bg-blue-500"
+                                        : "bg-violet-500"
+                                )}
+                            >
+                                {is_locally_used ? "Local Used" : "Imported"}
                             </span>
                         )}
                     </div>
